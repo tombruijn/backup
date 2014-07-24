@@ -38,12 +38,7 @@ describe Syncer::Cloud::LocalFile do
         Dir.chdir(@tmpdir) do
           bad_file = "sync_dir/bad\xFFfile"
           sanitized_bad_file = "sync_dir/bad\xEF\xBF\xBDfile"
-          FileUtils.touch bad_file
-
-          Logger.expects(:warn).with(
-            "\s\s[skipping] #{ File.expand_path(sanitized_bad_file) }\n" +
-            "\s\sPath Contains Invalid UTF-8 byte sequences"
-          )
+          expect { FileUtils.touch bad_file }.to raise_error
 
           local_files = described_class.find('sync_dir')
           expect( local_files.keys.count ).to be 3
